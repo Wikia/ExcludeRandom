@@ -16,8 +16,17 @@
 	"AutoloadClasses": {
 		"ExcludeRandomHooks": "ExcludeRandomHooks.php"
 	},
+	"HookHandlers": {
+		"main": {
+			"class": "ExcludeRandomHooks",
+			"services": [
+				"MainConfig",
+				"DBLoadBalancer"
+			]
+		}
+	},
 	"Hooks": {
-		"SpecialRandomGetRandomTitle": "ExcludeRandomHooks::onSpecialRandomGetRandomTitle"
+		"SpecialRandomGetRandomTitle": "main"
 	},
 	"config": {
 		"ExcludeRandomPages": {

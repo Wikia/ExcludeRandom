@@ -1,15 +1,26 @@
 <?php
-class ExcludeRandomHooks {
-	public static function onSpecialRandomGetRandomTitle( &$rand, &$isRedir, &$namespaces, &$extra, &$title ) {
-		$config = \ConfigFactory::getDefaultInstance()->makeConfig('main');
-		$wgExcludeRandomPages = $config->get('ExcludeRandomPages');
+
+use MediaWiki\Config\Config;
+use MediaWiki\Hook\SpecialRandomGetRandomTitleHook;
+use Wikimedia\Rdbms\ILoadBalancer;
+
+readonly class ExcludeRandomHooks implements SpecialRandomGetRandomTitleHook {
+
+	public function __construct(
+		private Config $config,
+		private ILoadBalancer $dbLoadBalancer,
+	) {
+	}
+
+	public function onSpecialRandomGetRandomTitle( &$randstr, &$isRedir, &$namespaces, &$extra, &$title ): true {
+		$wgExcludeRandomPages = $this->config->get( 'ExcludeRandomPages' );
 		if ( !is_array( $wgExcludeRandomPages ) || empty( $wgExcludeRandomPages ) ) {
 			return true;
 		}
 
-		$db = wfGetDB( DB_REPLICA );
+		$db = $this->dbLoadBalancer->getConnection( DB_REPLICA );
 		foreach ( $wgExcludeRandomPages as $cond ) {
-			$pattern = $db->strencode( $cond );
+			$pattern = $db->addQuotes( $cond );
 			$pattern = str_replace(
 				[ '_', '%', ' ', '*' ],
 				[ '\_', '\%', '\_', '%' ],
