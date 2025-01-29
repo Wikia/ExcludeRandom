@@ -26,7 +26,7 @@ readonly class ExcludeRandomHooks implements SpecialRandomGetRandomTitleHook {
 				[ '\_', '\%', '\_', '%' ],
 				$pattern
 			);
-			$extra[] = "`page_title` NOT LIKE '$pattern'";
+			$extra[] = "`page_title` NOT LIKE $pattern";
 		}
 
 		return true;
